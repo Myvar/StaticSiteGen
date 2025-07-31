@@ -13,7 +13,7 @@ gcc $command
 
 # run
 if [ -e "./$exe_name" ]; then
+  cp style.css out
   cd "$original_dir"
   "$(dirname "$0")/$exe_name" "${@:1}"
-  cp style.css out
 fi
