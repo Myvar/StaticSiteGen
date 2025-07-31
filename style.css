@@ -1,0 +1,71 @@
+/* General Styles */
+body {
+    background-color: #121212; /* Dark background */
+    color: #e0e0e0; /* Light text */
+    font-family: 'Arial', sans-serif; /* Better font */
+    line-height: 1.6; /* Improved readability */
+    margin: 0;
+    padding: 20px;
+    max-width: 800px; /* Maximum width for the body */
+    min-width: 320px; /* Minimum width for smaller devices */
+}
+
+/* Headings */
+h1 {
+    font-size: 2.5em; /* Larger size for main headings */
+    margin-bottom: 0.5em;
+    color: #ffffff; /* White color for h1 */
+}
+
+h2 {
+    font-size: 2em; /* Slightly smaller than h1 */
+    margin-bottom: 0.5em;
+    color: #cccccc; /* Light gray for h2 */
+}
+
+h3 {
+    font-size: 1.75em; /* Smaller than h2 */
+    margin-bottom: 0.5em;
+    color: #aaaaaa; /* Even lighter gray for h3 */
+}
+
+/* Preformatted text */
+pre {
+    background-color: #1e1e1e; /* Darker background for preformatted text */
+    color: #f8f8f2; /* Light text for preformatted */
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Paragraph Styles */
+p {
+    margin: 1em 0; /* Add space above and below paragraphs */
+    line-height: 1.6; /* Improve readability */
+    color: #e0e0e0; /* Light text color for dark mode */
+}
+
+/* Lists */
+ul {
+    list-style-type: none; /* Remove default bullets */
+    padding-left: 0; /* Remove padding */
+}
+
+ul li {
+    margin: 0.5em 0; /* Space between list items */
+}
+
+ul li::before {
+    content: "- "; /* Use dash instead of circle */
+    color: #ffffff; /* White color for dashes */
+}
+
+/* Links */
+a {
+    color: #ffcc00; /* Warm yellow for normal links */
+    text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+    color: #ffd700; /* Brighter gold for hover state */
+    text-decoration: underline; /* Underline on hover for emphasis */
+}

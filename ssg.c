@@ -159,7 +159,8 @@ bool convert_org_to_html(const char *src, HtmlFile *html) {
 
   sb_init(&html->content);
   html->title[0] = html->author[0] = '\0';
-  sb_append_str(&html->content, "<html>\n<head>\n");
+  sb_append_str(&html->content, "<html>\n<head>\n<link rel=\"stylesheet\" "
+                                "type=\"text/css\" href=\"\\style.css\">\n");
 
   bool in_list = false;
   bool found_header = false;
@@ -233,9 +234,9 @@ bool convert_org_to_html(const char *src, HtmlFile *html) {
         sb_append_str(&html->content, "</ul>\n");
         in_list = false;
       }
-      sb_append_str(&html->content, "<pre>");
+      sb_append_str(&html->content, "<p>");
       process_inline_links(&html->content, trim);
-      sb_append_str(&html->content, "</pre>\n");
+      sb_append_str(&html->content, "</p>\n");
     }
     line = strtok_r(NULL, "\n", &saveptr);
   }
