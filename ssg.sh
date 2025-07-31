@@ -17,6 +17,5 @@ if [ -e "./$exe_name" ]; then
   "$(dirname "$0")/$exe_name" "${@:1}"
 
   cd "$(dirname "$0")"
-  cp ./style.css out
-  ls -lah out
+  cp ./style.css $original_dir/out
 fi
