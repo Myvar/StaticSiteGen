@@ -18,4 +18,5 @@ if [ -e "./$exe_name" ]; then
 
   cd "$(dirname "$0")"
   cp ./style.css out
+  ls -lah out
 fi
