@@ -7,7 +7,7 @@ exe_name=ssg
 # build
 rm $exe_name 2>/dev/null
 
-command="$exe_name.c -std=c89 -o $exe_name -g"
+command="$exe_name.c -o $exe_name -g"
 bear -- gcc $command
 gcc $command
 
