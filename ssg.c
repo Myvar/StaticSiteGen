@@ -260,7 +260,8 @@ void traverse_dir(const char *root, const char *path, StaticSite *site) {
     snprintf(full, sizeof(full), "%s/%s", path, e->d_name);
     if (e->d_type == DT_DIR)
       traverse_dir(root, full, site);
-    else if (strstr(e->d_name, ".org")) {
+    else if (strlen(e->d_name) > 4 &&
+             strcmp(e->d_name + strlen(e->d_name) - 4, ".org") == 0) {
       HtmlFile f = {0};
       const char *rel = full + strlen(root);
       size_t l = strlen(rel);
