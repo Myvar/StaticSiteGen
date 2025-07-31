@@ -1,0 +1,2 @@
+# StaticSiteGen
+Static Site Gen
