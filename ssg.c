@@ -32,6 +32,28 @@ static void sb_append_str(StringBuilder *sb, const char *s) {
 }
 static void sb_finalize(StringBuilder *sb) { arrput(sb->buf, '\0'); }
 
+// Helper to identify image files by extension
+static bool is_image_path(const char *path) {
+  const char *ext = strrchr(path, '.');
+  if (!ext)
+    return false;
+  ext++; // Skip '.'
+
+  char lower_ext[32];
+  int i = 0;
+  for (; ext[i] && i < 31; ++i) {
+    lower_ext[i] = tolower((unsigned char)ext[i]);
+  }
+  lower_ext[i] = '\0';
+
+  const char *img_exts[] = {"png", "jpg", "jpeg", "gif", "bmp", "webp", "svg"};
+  for (size_t j = 0; j < sizeof(img_exts) / sizeof(char *); j++) {
+    if (strcmp(lower_ext, img_exts[j]) == 0)
+      return true;
+  }
+  return false;
+}
+
 // Helper to process inline Org-mode links ([[target]] or [[target][desc]])
 static void process_inline_links(StringBuilder *sb, const char *text) {
   const char *p = text;
@@ -69,14 +91,22 @@ static void process_inline_links(StringBuilder *sb, const char *text) {
       if (dlen2 > 4 && strcmp(desc + dlen2 - 4, ".org") == 0)
         desc[dlen2 - 4] = '\0';
     }
-    size_t t2 = strlen(target);
-    if (t2 > 4 && strcmp(target + t2 - 4, ".org") == 0)
-      target[t2 - 4] = '\0';
-    sb_append_str(sb, "<a href=\"");
-    sb_append_str(sb, target);
-    sb_append_str(sb, ".html\">");
-    sb_append_str(sb, desc);
-    sb_append_str(sb, "</a>");
+    if (is_image_path(target)) {
+      sb_append_str(sb, "<img src=\"");
+      sb_append_str(sb, target);
+      sb_append_str(sb, "\" alt=\"");
+      sb_append_str(sb, desc);
+      sb_append_str(sb, "\"/>");
+    } else {
+      size_t t2 = strlen(target);
+      if (t2 > 4 && strcmp(target + t2 - 4, ".org") == 0)
+        target[t2 - 4] = '\0';
+      sb_append_str(sb, "<a href=\"");
+      sb_append_str(sb, target);
+      sb_append_str(sb, ".html\">");
+      sb_append_str(sb, desc);
+      sb_append_str(sb, "</a>");
+    }
     p = end + 2;
   }
 }
@@ -145,6 +175,34 @@ bool read_file(const char *path, char **buf_out, size_t *size_out) {
   fclose(f);
   *buf_out = buf;
   *size_out = sz;
+  return true;
+}
+
+// Copy file from src to dest
+bool copy_file(const char *src, const char *dest) {
+  char *buf = NULL;
+  size_t size = 0;
+  if (!read_file(src, &buf, &size)) {
+    fprintf(stderr, "Cannot read %s to copy\n", src);
+    return false;
+  }
+
+  FILE *f_dest = fopen(dest, "wb");
+  if (!f_dest) {
+    free(buf);
+    perror("fopen dest for copy");
+    return false;
+  }
+
+  if (fwrite(buf, 1, size, f_dest) != size) {
+    free(buf);
+    fclose(f_dest);
+    perror("fwrite for copy");
+    return false;
+  }
+
+  free(buf);
+  fclose(f_dest);
   return true;
 }
 
@@ -272,6 +330,19 @@ void traverse_dir(const char *root, const char *path, StaticSite *site) {
       if (!convert_org_to_html(full, &f))
         ERROR_EXIT("convert_org_to_html");
       arrput(site->files, f);
+    } else if (is_image_path(e->d_name)) {
+      const char *rel_path = full + strlen(root);
+      char out_path[PATH_MAX];
+      snprintf(out_path, sizeof(out_path), "./out%s", rel_path);
+      if (!ensure_directory(out_path)) {
+        fprintf(stderr, "Warning: could not ensure directory for %s\n",
+                out_path);
+      } else {
+        if (!copy_file(full, out_path)) {
+          fprintf(stderr, "Warning: could not copy %s to %s\n", full,
+                  out_path);
+        }
+      }
     }
   }
   closedir(dp);
